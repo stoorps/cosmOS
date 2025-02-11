@@ -53,6 +53,8 @@ jobs:
 
           IMAGE="${IMAGE_FULL}"
 
+          echo "IMAGE=${IMAGE}"
+
           # Create temporary directory
           TEMP_FLATPAK_INSTALL_DIR=$(mktemp -d -p /tmp flatpak-XXXXXX)
           FLATPAK_REFS_DIR=./flatpak-refs
