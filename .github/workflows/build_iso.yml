@@ -34,6 +34,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+        
+
       - name: Get Flatpak dependencies
         id: flatpak-dependencies
         env:
@@ -43,6 +45,9 @@ jobs:
           set -euox pipefail
 
           IMAGE="${IMAGE_FULL}"
+
+          # Stoorps: Added as it was complaining...
+          docker pull ${IMAGE}
 
           # Create temporary directory
           TEMP_FLATPAK_INSTALL_DIR=$(mktemp -d -p /tmp flatpak-XXXXXX)
