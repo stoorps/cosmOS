@@ -2,23 +2,23 @@
 
 set -ouex pipefail
 
-### Install packages
+# Add ryanabx's cosmic-epoch repo
+if [[ "${FEDORA_MAJOR_VERSION}" == "rawhide" ]]; then \
+    curl -Lo /etc/yum.repos.d/_copr_ryanabx-cosmic.repo \
+        https://copr.fedorainfracloud.org/coprs/ryanabx/cosmic-epoch/repo/fedora-rawhide/ryanabx-cosmic-epoch-fedora-rawhide.repo \
+; else curl -Lo /etc/yum.repos.d/_copr_ryanabx-cosmic.repo \
+        https://copr.fedorainfracloud.org/coprs/ryanabx/cosmic-epoch/repo/fedora-$(rpm -E %fedora)/ryanabx-cosmic-epoch-fedora-$(rpm -E %fedora).repo \
+; fi
 
-# Packages can be installed from any enabled yum repo on the image.
-# RPMfusion repos are available by default in ublue main images
-# List of rpmfusion packages can be found here:
-# https://mirrors.rpmfusion.org/mirrorlist?path=free/fedora/updates/39/x86_64/repoview/index.html&protocol=https&redirect=1
 
-# this installs a package from fedora repos
-dnf install -y tmux 
+# Install cosmic-desktop and supporting packages
+rpm-ostree install cosmic-desktop;
+rpm-ostree install gnome-keyring-pam NetworkManager-tui NetworkManager-openvpn;
 
-# Use a COPR Example:
-#
-# dnf5 -y copr enable ublue-os/staging
-# dnf5 -y install package
-# Disable COPRs so they don't end up enabled on the final image:
-# dnf5 -y copr disable ublue-os/staging
 
-#### Example for enabling a System Unit File
-
-systemctl enable podman.socket
+# Enable cosmic-greeter and disable other display managers
+systemctl disable gdm || true;
+systemctl disable sddm || true;
+systemctl enable cosmic-greeter;
+# ostree container commit; # do this in the COntainerfile
+mkdir -p /var/tmp && chmod -R 1777 /var/tmp

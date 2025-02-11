@@ -1,21 +1,18 @@
-FROM ghcr.io/ublue-os/silverblue-main:latest
+ARG SOURCE_IMAGE="${SOURCE_IMAGE:-base-main}"
+ARG SOURCE_ORG="${SOURCE_ORG:-ghcr.io/ublue-os}"
+ARG BASE_IMAGE="${SOURCE_ORG}/${SOURCE_IMAGE}"
+ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION:-41}"
 
-## Other possible base images include:
-# FROM ghcr.io/ublue-os/bazzite:stable
-# FROM ghcr.io/ublue-os/bluefin-nvidia:stable
-# 
-# ... and so on, here are more base images
-# Universal Blue Images: https://github.com/orgs/ublue-os/packages
-# Fedora base image: quay.io/fedora/fedora-bootc:41
-# CentOS base images: quay.io/centos-bootc/centos-bootc:stream10
-
-### MODIFICATIONS
-## make modifications desired in your image and install packages by modifying the build.sh script
-## the following RUN directive does all the things required to run "build.sh" as recommended.
+FROM ${BASE_IMAGE}:${FEDORA_MAJOR_VERSION}
+ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION:-41}"
 
 COPY build.sh /tmp/build.sh
 
-RUN mkdir -p /var/lib/alternatives && \
+RUN if [[ "${FEDORA_MAJOR_VERSION}" == "rawhide" ]]; then \
+    curl -Lo /etc/yum.repos.d/_copr_ryanabx-cosmic.repo \
+    https://copr.fedorainfracloud.org/coprs/ryanabx/cosmic-epoch/repo/fedora-rawhide/ryanabx-cosmic-epoch-fedora-rawhide.repo \
+    ; else curl -Lo /etc/yum.repos.d/_copr_ryanabx-cosmic.repo \
+    https://copr.fedorainfracloud.org/coprs/ryanabx/cosmic-epoch/repo/fedora-$(rpm -E %fedora)/ryanabx-cosmic-epoch-fedora-$(rpm -E %fedora).repo \
+    ; fi && \
     /tmp/build.sh && \
     ostree container commit
-    
