@@ -32,10 +32,10 @@ jobs:
         flavor:
           - base
           - base-nvidia
-          - silverblue
-          - silverblue-nvidia
-          - kinoite
-          - kinoite-nvidia
+        #  - silverblue
+        #  - silverblue-nvidia
+        #  - kinoite
+        #  - kinoite-nvidia
 
     steps:
       # Checkout push-to-registry action GitHub repository
